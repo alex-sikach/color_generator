@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Color</title>
+</head>
+<style type="text/css">
+	@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap');
+	* {
+		padding: 0;
+		margin: 0;
+		position: relative;
+	}
+	body {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+	.color {
+		width: max-content;
+		height: max-content;
+		font-size: 7em;
+		font-family: 'Ubuntu', sans-serif;
+		cursor: pointer;
+	}
+	.copied {
+		position: absolute;
+		width: max-content;
+		height: max-content;
+		top: -100px;
+		font-size: 3em;
+		text-align: center;
+		padding: 11px;
+		border-radius: 13px;
+	}
+</style>
+<body>
+<div class="wrapper">
+	<p class="copied">Copied</p>
+	<p class="color"></p>
+</div>
+
+<!-- SCRIPTS -->
+<script type="text/javascript">
+	function hslToHex(h, s, l) {
+	  l /= 100;
+	  const a = s * Math.min(l, 1 - l) / 100;
+	  const f = n => {
+	    const k = (n + h / 30) % 12;
+	    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+	    return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+	  };
+	  return `#${f(0)}${f(8)}${f(4)}`;
+	}
+	function randomColor(el=body) {
+		let hue = Math.floor(Math.random() * 360+1);
+		let saturation = Math.floor(Math.random() * 101);
+		let lightness = Math.floor(Math.random() * 101);
+		let color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+		let oppositeColor = `hsl(${360-hue}, ${saturation}%, ${100-lightness}%)`;
+		el.style.backgroundColor = color;
+		let hexColor = hslToHex(hue, saturation, lightness);
+		document.querySelector('.color').textContent = hexColor;
+		document.querySelector('.color').style.color = oppositeColor;
+		document.querySelector('.color').color = hexColor;
+
+		return {hex: hexColor, opos: oppositeColor};
+	}
+	var body = document.body;
+	let theme = randomColor();
+	document.querySelector('.copied').style.opacity = 0;
+	document.querySelector('.copied').style.backgroundColor = theme.opos;
+	document.querySelector('.copied').style.color = theme.hex;
+	document.querySelector('.color').onclick = () => {
+		navigator.clipboard.writeText(document.querySelector('.color').color);
+		let i = 1;
+		function opac() {
+			document.querySelector('.copied').style.opacity = i;
+			// console.log(i+ ' : '+ (i-0.1).toFixed(1));
+			i = i-0.035; i = i.toFixed(2);
+			setTimeout(() => {
+				if(i >= 0)
+					opac();
+			}, 100);
+		}
+		opac();
+	}
+</script>
+</body>
+</html>
